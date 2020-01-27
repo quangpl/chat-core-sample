@@ -30,4 +30,13 @@ $(function() {
      $("#m").keyup(function(val) {
        socket.emit("stop typing");
      });
+
+     $("#stop").click(function() {
+      socket.emit("stop chat");
+      alert("STOP CHAT")
+     });
+      $("#start").click(function() {
+        socket.emit("start chat");
+        alert("START CHAT");
+      });
 });

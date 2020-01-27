@@ -10,7 +10,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
-
+const ROOM_DEFAULT = "room test"
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -67,23 +67,30 @@ var server = http.createServer(app);
 var io = require("socket.io")(server);
 io.on("connection", function(socket) {
   console.log("a user connected");
-   io.emit("chat message", "A user has been joined");
+  socket.join(ROOM_DEFAULT);
+   io.to(ROOM_DEFAULT).emit("chat message", "A user has been joined");
   socket.on("disconnect",()=>{
     console.log("disconnect");
   })
 
    socket.on("chat message", function(msg) {
-     console.log("message: " + msg);
-      io.emit("chat message", msg);
+      io.to(ROOM_DEFAULT).emit("chat message", msg);
    });
 
    socket.on("typing", function() {
-     io.emit("typing");
+     io.to(ROOM_DEFAULT).emit("typing");
    });
 
    socket.on("stop typing", function() {
-     io.emit("stop typing");
+     io.to(ROOM_DEFAULT).emit("stop typing");
    });
+
+   socket.on("stop chat", function() {
+   socket.leave(ROOM_DEFAULT);
+   });
+   socket.on("start chat",()=>{
+      socket.join(ROOM_DEFAULT);
+   })
 });
 
 
